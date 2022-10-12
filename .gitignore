@@ -1,0 +1,6 @@
+*.ipynb
+*DS_Store*
+*pyc
+*.ics
+
+virtual/
