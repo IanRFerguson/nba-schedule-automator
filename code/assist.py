@@ -31,7 +31,7 @@ def get_command_line_arguments():
         "--year",
         type=int,
         required=False,
-        default=datetime.now(pytz.timezone("US/Eastern")).strftime("%Y"),
+        default=None,
         help="Year that season will end ... 2022-2023, input 2023"
     )
 
@@ -57,6 +57,29 @@ def validate_user_input(user_input: str) -> bool:
 
 
 
+def double_check_year(user_input: int) -> int:
+    """
+    We need to make sure that NO year argument will
+    still produce the relevant schedule ... i.e., I am writing
+    this in the year 2022 (current year) but I want to see the 2022-2023
+    schedule
+
+    Parameters
+        user_input: Integer representation of the year
+    """
+
+    right_now = datetime.now(pytz.utc)
+
+    current_month = int(right_now.strftime("%m"))
+
+    if current_month >= 6:
+        return int(right_now.strftime("%Y")) + 1
+
+    else:
+        return int(right_now.strftime("%Y"))
+
+
+
 def setup() -> tuple:
     """
     Command line + validation wrapper
@@ -64,13 +87,21 @@ def setup() -> tuple:
 
     arguments = get_command_line_arguments()
 
+    team_ = arguments.team
+    year_ = arguments.year
+
     ###
 
     try:
-        validate_user_input(arguments.team)
+        validate_user_input(team_)
     except Exception as e:
         raise e
 
     ###
 
-    return arguments.team, arguments.year
+    if year_ is None:
+        year_ = double_check_year(year_)
+        
+    ###
+
+    return team_, year_
