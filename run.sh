@@ -15,8 +15,6 @@ python3 -m venv ./virtual
 # Work on virtual env
 source ./virtual/bin/activate
 
-#####
-
 # Upgrade pip
 python3 -m pip -q install --upgrade pip
 
@@ -24,10 +22,8 @@ python3 -m pip -q install --upgrade pip
 python3 -m pip -q install -r requirements.txt
 
 # Bonus depends
-python3 -m pip -q install lxml
+python3 -m pip install --upgrade setuptools && python3 -m pip -q install lxml
 
 #####
 
 python3 code/main.py --team $TEAM
-
-#####
