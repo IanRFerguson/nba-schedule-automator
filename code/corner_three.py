@@ -1,18 +1,16 @@
 #!/bin/python3
 import pandas as pd
+import typing
 from ics import Calendar, Event
 from datetime import datetime, timedelta
-from dateutil import tz
 import pytz
 import json
+import os
 from tqdm import tqdm
 from time import sleep
-from paths import *
+from paths import path_to_teams, parent
 
 ##########
-
-
-this_season = int(datetime.now(pytz.timezone("US/Eastern")).strftime("%Y")) + 1
 
 
 class NBA_Schedule:
@@ -22,25 +20,43 @@ class NBA_Schedule:
     local machine
     """
 
-    def __init__(self, team: str, year: int = this_season):
+    def __init__(self, team: str, year: typing.Optional[int] = None):
         self.team_abbreviation = team
-        self.year = year
+
+        if not year:
+            self.year = (
+                int(datetime.now(pytz.timezone("US/Eastern")).strftime("%Y")) + 1
+            )
+        else:
+            self.year = year
 
         ###
 
-        with open(path_to_teams) as incoming:
-            temp = json.load(incoming)[self.team_abbreviation]
+        team_data = self.load_team_data()
 
-            self.team_name = temp["team_name"]
-            self.url = temp["url"].format(self.year)
-            self.nickname = temp["nickname"]
+        self.team_name = team_data["team_name"]
+        self.url = team_data["url"].format(self.year)
+        self.nickname = team_data["nickname"]
+
+    def load_team_data(self):
+        """
+        Load local JSON file with team data
+        """
+
+        with open(path_to_teams) as incoming:
+            try:
+                temp = json.load(incoming)[self.team_abbreviation]
+            except KeyError:
+                raise KeyError(
+                    f"Whoops! {self.team_abbreviation} is an invalid team abbreviation"
+                )
+
+        return temp
 
     def get_team_schedule(self) -> pd.DataFrame:
         """
         Scrapes basketball reference team_dataule
         """
-
-        ###
 
         def military_time(x):
             x = x.replace("p", " PM")
@@ -61,8 +77,6 @@ class NBA_Schedule:
         # Scrape HTML data from BasketballReference
         team_data = pd.read_html(self.url)[0]
 
-        ###
-
         # Cast all column names to uppercase
         team_data.columns = [x.upper() for x in team_data.columns]
 
@@ -71,8 +85,6 @@ class NBA_Schedule:
 
         # Cast DATE column to datetime
         team_data["DATE"] = pd.to_datetime(team_data["DATE"])
-
-        ###
 
         team_data["START (ET)"] = team_data["START (ET)"].apply(
             lambda x: military_time(x)
@@ -108,12 +120,8 @@ class NBA_Schedule:
         and write locally as .ics file
         """
 
-        ###
-
         def endtime(x):
             return x + timedelta(hours=2)
-
-        ###
 
         team_schedule = self.get_team_schedule()
 

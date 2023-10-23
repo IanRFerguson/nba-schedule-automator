@@ -15,7 +15,7 @@ def run():
     print(f"Schedule written!\n\nLET'S GO {nba.nickname.upper()}!")
 
 
-##########
+#####
 
 
 if __name__ == "__main__":
