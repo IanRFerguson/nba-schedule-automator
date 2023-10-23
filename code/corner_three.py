@@ -9,11 +9,11 @@ from tqdm import tqdm
 from time import sleep
 from paths import *
 
-
 ##########
 
 
 this_season = int(datetime.now(pytz.timezone("US/Eastern")).strftime("%Y")) + 1
+
 
 class NBA_Schedule:
     """
@@ -22,8 +22,7 @@ class NBA_Schedule:
     local machine
     """
 
-    def __init__(self, team: str, year: int=this_season):
-
+    def __init__(self, team: str, year: int = this_season):
         self.team_abbreviation = team
         self.year = year
 
@@ -36,11 +35,9 @@ class NBA_Schedule:
             self.url = temp["url"].format(self.year)
             self.nickname = temp["nickname"]
 
-    
-
     def get_team_schedule(self) -> pd.DataFrame:
         """
-        Scrapes basketball reference team_dataule 
+        Scrapes basketball reference team_dataule
         """
 
         ###
@@ -53,10 +50,8 @@ class NBA_Schedule:
 
             return time_out
 
-
         def localize_est(x):
             return pytz.timezone("US/Eastern").localize(x)
-
 
         def localize_utc(x):
             return x.astimezone(pytz.utc)
@@ -79,30 +74,35 @@ class NBA_Schedule:
 
         ###
 
-        team_data["START (ET)"] = (team_data["START (ET)"].apply(lambda x: military_time(x)))
+        team_data["START (ET)"] = team_data["START (ET)"].apply(
+            lambda x: military_time(x)
+        )
 
         team_data["DATE"] = team_data["DATE"].astype(str)
-        
-        team_data["CALENDAR_EST"] = pd.to_datetime(team_data["DATE"] + " " + team_data["START (ET)"])
-        team_data["CALENDAR_EST"] = team_data["CALENDAR_EST"].apply(lambda x: localize_est(x))
 
-        team_data["CALENDAR_UTC"] = team_data["CALENDAR_EST"].apply(lambda x: localize_utc(x))
+        team_data["CALENDAR_EST"] = pd.to_datetime(
+            team_data["DATE"] + " " + team_data["START (ET)"]
+        )
+        team_data["CALENDAR_EST"] = team_data["CALENDAR_EST"].apply(
+            lambda x: localize_est(x)
+        )
+
+        team_data["CALENDAR_UTC"] = team_data["CALENDAR_EST"].apply(
+            lambda x: localize_utc(x)
+        )
 
         ###
 
         # Columns to keep
-        keepers = [
-            "DATE", "START (ET)", "CALENDAR_EST", 
-            "CALENDAR_UTC", "OPPONENT"
-        ]
+        keepers = ["DATE", "START (ET)", "CALENDAR_EST", "CALENDAR_UTC", "OPPONENT"]
 
         team_data = team_data.loc[:, keepers]
 
         return team_data
 
-
-
-    def write_team_schedule(self, write_file: bool=True, return_file: bool=False, dev: bool=False):
+    def write_team_schedule(
+        self, write_file: bool = True, return_file: bool = False, dev: bool = False
+    ):
         """
         Reads in team team_dataule, push to ics Calendar object,
         and write locally as .ics file
@@ -119,13 +119,12 @@ class NBA_Schedule:
 
         if dev:
             team_schedule = team_schedule.iloc[:1]
-            
+
         output_calendar = Calendar()
         print(f"\n\nWriting the {self.nickname} schedule...")
         sleep(2.5)
 
         for ix, opponent in tqdm(enumerate(team_schedule["OPPONENT"])):
-            
             game = Event()
 
             game.name = f"{self.team_name} vs. {opponent}"
@@ -142,10 +141,7 @@ class NBA_Schedule:
             output_filename = f"{self.nickname.upper()}_{self.year}_SCHEDULE.ics"
             output_filename = output_filename.replace(" ", "_")
 
-            output_path = os.path.join(
-                parent,
-                output_filename
-            )
+            output_path = os.path.join(parent, output_filename)
 
             with open(output_path, "w") as outgoing:
                 outgoing.writelines(output_calendar.serialize_iter())

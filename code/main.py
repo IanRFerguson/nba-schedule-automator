@@ -2,18 +2,13 @@
 from assist import setup
 from corner_three import NBA_Schedule
 
-
 ##########
 
 
 def run():
-
     team, year = setup()
 
-    nba = NBA_Schedule(
-        team=team,
-        year=year
-    )
+    nba = NBA_Schedule(team=team, year=year)
 
     nba.write_team_schedule()
 

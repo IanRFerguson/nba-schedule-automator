@@ -5,7 +5,6 @@ import pytz
 import json
 from paths import *
 
-
 ##########
 
 
@@ -22,7 +21,7 @@ def get_command_line_arguments():
         "--team",
         type=str,
         required=True,
-        help="Three-letter abbreviation (e.g., NYK, GSW)"
+        help="Three-letter abbreviation (e.g., NYK, GSW)",
     )
 
     ###
@@ -32,11 +31,10 @@ def get_command_line_arguments():
         type=int,
         required=False,
         default=None,
-        help="Year that season will end ... 2022-2023, input 2023"
+        help="Year that season will end ... 2022-2023, input 2023",
     )
 
     return parser.parse_args()
-
 
 
 def validate_user_input(user_input: str) -> bool:
@@ -54,7 +52,6 @@ def validate_user_input(user_input: str) -> bool:
         raise ValueError(f"{user_input} invalid team abbreviation")
 
     return True
-
 
 
 def double_check_year(user_input: int) -> int:
@@ -79,7 +76,6 @@ def double_check_year(user_input: int) -> int:
         return int(right_now.strftime("%Y"))
 
 
-
 def setup() -> tuple:
     """
     Command line + validation wrapper
@@ -101,7 +97,7 @@ def setup() -> tuple:
 
     if year_ is None:
         year_ = double_check_year(year_)
-        
+
     ###
 
     return team_, year_

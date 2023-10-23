@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#####
-
 read -p "Team Abbreviation (e.g., NYK):    " TEAM
 echo " "
 sleep 2;
