@@ -19,7 +19,7 @@ source ./virtual/bin/activate
 python3 -m pip -q install --upgrade pip
 
 # Install dependencies
-python3 -m pip -q install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 # Bonus depends
 python3 -m pip install --upgrade setuptools && python3 -m pip -q install lxml
