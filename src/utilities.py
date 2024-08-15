@@ -1,9 +1,11 @@
-#!/bin/python3
 import argparse
-from datetime import datetime
-import pytz
 import json
-from paths import *
+from datetime import datetime
+
+import pytz
+
+from local_paths import PATH_TO_TEAMS
+from logger import logger
 
 ##########
 
@@ -34,6 +36,14 @@ def get_command_line_arguments():
         help="Year that season will end ... 2022-2023, input 2023",
     )
 
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        required=False,
+        default=False,
+        help="Activate debugger",
+    )
+
     return parser.parse_args()
 
 
@@ -45,35 +55,30 @@ def validate_user_input(user_input: str) -> bool:
         user_input: String abbreviation of team name (e.g., NYK, GSW)
     """
 
-    with open(path_to_teams) as incoming:
+    with open(PATH_TO_TEAMS) as incoming:
         all_abbreviations = list(json.load(incoming).keys())
 
     if user_input not in all_abbreviations:
         raise ValueError(f"{user_input} invalid team abbreviation")
 
-    return True
 
-
-def double_check_year(user_input: int) -> int:
+def infer_league_year() -> int:
     """
     We need to make sure that NO year argument will
     still produce the relevant schedule ... i.e., I am writing
     this in the year 2022 (current year) but I want to see the 2022-2023
     schedule
-
-    Parameters
-        user_input: Integer representation of the year
     """
 
     right_now = datetime.now(pytz.utc)
 
     current_month = int(right_now.strftime("%m"))
 
+    # NOTE - This is when the season ends
     if current_month >= 6:
         return int(right_now.strftime("%Y")) + 1
 
-    else:
-        return int(right_now.strftime("%Y"))
+    return int(right_now.strftime("%Y"))
 
 
 def setup() -> tuple:
@@ -86,18 +91,13 @@ def setup() -> tuple:
     team_ = arguments.team
     year_ = arguments.year
 
-    ###
+    if arguments.debug:
+        logger.setLevel(level=10)
+        logger.debug("** Debugger active **")
 
-    try:
-        validate_user_input(team_)
-    except Exception as e:
-        raise e
+    validate_user_input(team_)
 
-    ###
-
-    if year_ is None:
-        year_ = double_check_year(year_)
-
-    ###
+    if not year_:
+        year_ = infer_league_year()
 
     return team_, year_
