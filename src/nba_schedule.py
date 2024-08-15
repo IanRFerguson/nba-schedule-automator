@@ -1,26 +1,29 @@
-#!/bin/python3
-import pandas as pd
-import typing
-from ics import Calendar, Event
-from datetime import datetime, timedelta
-import pytz
 import json
 import os
-from tqdm import tqdm
+from datetime import datetime, timedelta
 from time import sleep
-from paths import path_to_teams, parent
+from typing import Optional
+
+import pandas as pd
+import pytz
+from ics import Calendar, Event
+from tqdm import tqdm
+
+from local_paths import PARENT, PATH_TO_TEAMS
 
 ##########
 
+COLUMNS_TO_WRITE = ["DATE", "START (ET)", "CALENDAR_EST", "CALENDAR_UTC", "OPPONENT"]
 
-class NBA_Schedule:
+
+class NBASchedule:
     """
     This class scrapes the web for team_dataule data,
     wraps it in an ICS calendar object, and writes to your
     local machine
     """
 
-    def __init__(self, team: str, year: typing.Optional[int] = None):
+    def __init__(self, team: str, year: Optional[int] = None):
         self.team_abbreviation = team
 
         if not year:
@@ -43,7 +46,7 @@ class NBA_Schedule:
         Load local JSON file with team data
         """
 
-        with open(path_to_teams) as incoming:
+        with open(PATH_TO_TEAMS) as incoming:
             try:
                 temp = json.load(incoming)[self.team_abbreviation]
             except KeyError:
@@ -53,9 +56,26 @@ class NBA_Schedule:
 
         return temp
 
-    def get_team_schedule(self) -> pd.DataFrame:
+    def get_team_schedule(self, columns_to_write=COLUMNS_TO_WRITE) -> pd.DataFrame:
         """
         Scrapes basketball reference team_dataule
+        """
+
+        # Scrape HTML data from BasketballReference
+        team_data = pd.read_html(self.url)[0]
+
+        team_data = self.clean_team_data(team_data)
+
+        team_data = team_data.loc[:, columns_to_write]
+
+        return team_data
+
+    def clean_team_data(self, team_data: pd.DataFrame) -> pd.DataFrame:
+        """
+        Performs several important preprocessing steps including:
+        * Standardizing column names
+        * Removing filler rows from the scraped data
+        * Standardizing data types
         """
 
         def military_time(x):
@@ -71,11 +91,6 @@ class NBA_Schedule:
 
         def localize_utc(x):
             return x.astimezone(pytz.utc)
-
-        ###
-
-        # Scrape HTML data from BasketballReference
-        team_data = pd.read_html(self.url)[0]
 
         # Cast all column names to uppercase
         team_data.columns = [x.upper() for x in team_data.columns]
@@ -103,16 +118,9 @@ class NBA_Schedule:
             lambda x: localize_utc(x)
         )
 
-        ###
-
-        # Columns to keep
-        keepers = ["DATE", "START (ET)", "CALENDAR_EST", "CALENDAR_UTC", "OPPONENT"]
-
-        team_data = team_data.loc[:, keepers]
-
         return team_data
 
-    def write_team_schedule(
+    def write_team_schedule_to_ics(
         self, write_file: bool = True, return_file: bool = False, dev: bool = False
     ):
         """
@@ -149,7 +157,7 @@ class NBA_Schedule:
             output_filename = f"{self.nickname.upper()}_{self.year}_SCHEDULE.ics"
             output_filename = output_filename.replace(" ", "_")
 
-            output_path = os.path.join(parent, output_filename)
+            output_path = os.path.join(PARENT, output_filename)
 
             with open(output_path, "w") as outgoing:
                 outgoing.writelines(output_calendar.serialize_iter())

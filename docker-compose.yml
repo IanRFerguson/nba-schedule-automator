@@ -1,0 +1,8 @@
+services:
+  canales:
+    build:
+      context: .
+    volumes:
+      - .:/app/
+    env_file:
+      - team.env

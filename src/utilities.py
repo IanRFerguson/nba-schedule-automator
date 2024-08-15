@@ -1,9 +1,10 @@
-#!/bin/python3
 import argparse
-from datetime import datetime
-import pytz
 import json
-from paths import *
+from datetime import datetime
+
+import pytz
+
+from local_paths import PATH_TO_TEAMS
 
 ##########
 
@@ -45,7 +46,7 @@ def validate_user_input(user_input: str) -> bool:
         user_input: String abbreviation of team name (e.g., NYK, GSW)
     """
 
-    with open(path_to_teams) as incoming:
+    with open(PATH_TO_TEAMS) as incoming:
         all_abbreviations = list(json.load(incoming).keys())
 
     if user_input not in all_abbreviations:
@@ -69,11 +70,11 @@ def double_check_year(user_input: int) -> int:
 
     current_month = int(right_now.strftime("%m"))
 
+    # NOTE - This is when the season ends
     if current_month >= 6:
         return int(right_now.strftime("%Y")) + 1
 
-    else:
-        return int(right_now.strftime("%Y"))
+    return int(right_now.strftime("%Y"))
 
 
 def setup() -> tuple:
@@ -86,18 +87,12 @@ def setup() -> tuple:
     team_ = arguments.team
     year_ = arguments.year
 
-    ###
-
     try:
         validate_user_input(team_)
     except Exception as e:
         raise e
 
-    ###
-
     if year_ is None:
         year_ = double_check_year(year_)
-
-    ###
 
     return team_, year_

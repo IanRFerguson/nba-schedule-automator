@@ -1,6 +1,5 @@
-#!/bin/python3
-from assist import setup
-from corner_three import NBA_Schedule
+from utilities import setup
+from nba_schedule import NBASchedule
 
 ##########
 
@@ -8,9 +7,9 @@ from corner_three import NBA_Schedule
 def run():
     team, year = setup()
 
-    nba = NBA_Schedule(team=team, year=year)
+    nba = NBASchedule(team=team, year=year)
 
-    nba.write_team_schedule()
+    nba.write_team_schedule_to_ics()
 
     print(f"Schedule written!\n\nLET'S GO {nba.nickname.upper()}!")
 
