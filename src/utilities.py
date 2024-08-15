@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 from datetime import datetime
 
 import pytz
@@ -99,11 +98,6 @@ def setup() -> tuple:
     validate_user_input(team_)
 
     if not year_:
-        year_environ = os.environ.get("LEAGUE_YEAR")
-
-        if year_environ:
-            year_ = year_environ
-        else:
-            year_ = infer_league_year()
+        year_ = infer_league_year()
 
     return team_, year_

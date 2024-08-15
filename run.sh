@@ -2,4 +2,4 @@
 
 set -e
 
-python src/main.py --team $TEAM_ABBREVIATION
+python src/main.py --team $TEAM_ABBREVIATION --year $LEAGUE_YEAR
