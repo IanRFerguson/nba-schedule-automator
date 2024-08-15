@@ -7,9 +7,9 @@ from typing import Optional
 import pandas as pd
 import pytz
 from ics import Calendar, Event
-from tqdm import tqdm
 
 from local_paths import PARENT, PATH_TO_TEAMS
+from logger import logger
 
 ##########
 
@@ -137,10 +137,10 @@ class NBASchedule:
             team_schedule = team_schedule.iloc[:1]
 
         output_calendar = Calendar()
-        print(f"\n\nWriting the {self.nickname} schedule...")
+        logger.info(f"Writing the {self.nickname} schedule...")
         sleep(2.5)
 
-        for ix, opponent in tqdm(enumerate(team_schedule["OPPONENT"])):
+        for ix, opponent in enumerate(team_schedule["OPPONENT"]):
             game = Event()
 
             game.name = f"{self.team_name} vs. {opponent}"

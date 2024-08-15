@@ -1,5 +1,6 @@
-from utilities import setup
+from logger import logger
 from nba_schedule import NBASchedule
+from utilities import setup
 
 ##########
 
@@ -11,7 +12,8 @@ def run():
 
     nba.write_team_schedule_to_ics()
 
-    print(f"Schedule written!\n\nLET'S GO {nba.nickname.upper()}!")
+    logger.info("Schedule written!")
+    logger.info(f"LET'S GO {nba.nickname.upper()}!")
 
 
 #####

@@ -1,10 +1,12 @@
 import argparse
 import json
+import os
 from datetime import datetime
 
 import pytz
 
 from local_paths import PATH_TO_TEAMS
+from logger import logger
 
 ##########
 
@@ -35,6 +37,14 @@ def get_command_line_arguments():
         help="Year that season will end ... 2022-2023, input 2023",
     )
 
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        required=False,
+        default=False,
+        help="Activate debugger",
+    )
+
     return parser.parse_args()
 
 
@@ -52,18 +62,13 @@ def validate_user_input(user_input: str) -> bool:
     if user_input not in all_abbreviations:
         raise ValueError(f"{user_input} invalid team abbreviation")
 
-    return True
 
-
-def double_check_year(user_input: int) -> int:
+def infer_league_year() -> int:
     """
     We need to make sure that NO year argument will
     still produce the relevant schedule ... i.e., I am writing
     this in the year 2022 (current year) but I want to see the 2022-2023
     schedule
-
-    Parameters
-        user_input: Integer representation of the year
     """
 
     right_now = datetime.now(pytz.utc)
@@ -87,12 +92,18 @@ def setup() -> tuple:
     team_ = arguments.team
     year_ = arguments.year
 
-    try:
-        validate_user_input(team_)
-    except Exception as e:
-        raise e
+    if arguments.debug:
+        logger.setLevel(level=10)
+        logger.debug("** Debugger active **")
 
-    if year_ is None:
-        year_ = double_check_year(year_)
+    validate_user_input(team_)
+
+    if not year_:
+        year_environ = os.environ.get("LEAGUE_YEAR")
+
+        if year_environ:
+            year_ = year_environ
+        else:
+            year_ = infer_league_year()
 
     return team_, year_
