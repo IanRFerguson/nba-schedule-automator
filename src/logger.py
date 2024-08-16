@@ -8,6 +8,6 @@ _handler.setFormatter(_formatter)
 logger.addHandler(_handler)
 logger.setLevel("INFO")
 
-if os.environ.get("DEBUG"):
-    logger.setLevel("DEBUG")
-    logger.info("Logging at debug level")
+if os.environ.get("DEBUG").lower() == "true":
+    logger.setLevel(level=10)
+    logger.debug("** Debugger Active **")

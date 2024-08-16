@@ -1,0 +1,50 @@
+{
+    "ATL": {
+        "team_name": "Atlanta Dream", 
+        "url": "https://www.basketball-reference.com/wnba/teams/ATL/{}_games.html"
+    },
+    "CHI": {
+        "team_name": "Chicago Sky", 
+        "url": "https://www.basketball-reference.com/wnba/teams/CHI/{}_games.html"
+    },
+    "CON": {
+        "team_name": "Connecticut Sun", 
+        "url": "https://www.basketball-reference.com/wnba/teams/CON/{}_games.html"
+    },
+    "IND": {
+        "team_name": "Indiana Fever", 
+        "url": "https://www.basketball-reference.com/wnba/teams/IND/{}_games.html"
+    },
+    "LAS": {
+        "team_name": "Los Angeles Sparks", 
+        "url": "https://www.basketball-reference.com/wnba/teams/LAS/{}_games.html"
+    },
+    "MIN": {
+        "team_name": "Minnesota Lynx", 
+        "url": "https://www.basketball-reference.com/wnba/teams/MIN/{}_games.html"
+    },
+    "NYL": {
+        "team_name": "New York Liberty", 
+        "url": "https://www.basketball-reference.com/wnba/teams/NYL/{}_games.html"
+    },
+    "PHO": {
+        "team_name": "Phoenix Mercury", 
+        "url": "https://www.basketball-reference.com/wnba/teams/PHO/{}_games.html"
+    },
+    "LV": {
+        "team_name": "Las Vegas Aces", 
+        "url": "https://www.basketball-reference.com/wnba/teams/SAS/{}_games.html"
+    },
+    "SEA": {
+        "team_name": "Seattle Storm", 
+        "url": "https://www.basketball-reference.com/wnba/teams/SEA/{}_games.html"
+    },
+    "DAL": {
+        "team_name": "Dallas Wings", 
+        "url": "https://www.basketball-reference.com/wnba/teams/TUL/{}_games.html"
+    },
+    "WAS": {
+        "team_name": "Washington Mystics", 
+        "url": "https://www.basketball-reference.com/wnba/teams/WAS/{}_games.html"
+    }
+}

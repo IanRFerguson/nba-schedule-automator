@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from datetime import datetime, timedelta
 from time import sleep
 from typing import Optional
@@ -39,7 +40,7 @@ class NBASchedule:
 
         self.team_name = team_data["team_name"]
         self.url = team_data["url"].format(self.year)
-        self.nickname = team_data["nickname"]
+        self.nickname = team_data["team_name"].split(" ")[-1]
 
     def load_team_data(self):
         """
@@ -62,7 +63,18 @@ class NBASchedule:
         """
 
         # Scrape HTML data from BasketballReference
-        team_data = pd.read_html(self.url)[0]
+        try:
+            team_data = pd.read_html(self.url)[0]
+        except Exception as e:
+            if "No tables found" in str(e):
+                logger.error("Failed to scrape HTML table for the given values...")
+                logger.error(
+                    "Check the link manually - if there are no tables this is a valid error"
+                )
+                logger.error(self.url)
+                sys.exit(1)
+            else:
+                raise e
 
         team_data = self.clean_team_data(team_data)
 
