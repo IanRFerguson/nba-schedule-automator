@@ -1,5 +1,5 @@
 # NBA SCHEDULE AUTOMATOR
- This program automatically generates a .ics calendar file for your favorite team
+ This program automatically generates an `.ics` calendar file for your favorite team
 
 ## Requirements
 
